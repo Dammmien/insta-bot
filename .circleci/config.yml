@@ -19,6 +19,7 @@ jobs:
       - run: yarn start
 
 workflows:
+
   version: 2
 
   daily:
