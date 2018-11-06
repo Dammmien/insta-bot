@@ -25,6 +25,10 @@ workflows:
     triggers:
       - schedule:
           cron: 10 10 * * *
+          filters:
+            branches:
+              only:
+                - master
     jobs:
       - like
 
