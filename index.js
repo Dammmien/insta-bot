@@ -20,7 +20,7 @@ const nodeToPost = ({ node }) => ({
 
 (async () => {
   const start = Date.now();
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
   await page.setCookie({
