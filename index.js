@@ -36,7 +36,13 @@ const nodeToPost = ({ node }) => ({
     id: 1
   });
 
+  console.log( process.env.SESSION_ID );
+
+  console.log( 'Go to www.instagram.com' );
+
   await page.goto('https://www.instagram.com');
+
+  console.log( 'Go to www.instagram.com/explore/tags/drawing' );
 
   await page.goto('https://www.instagram.com/explore/tags/drawing');
 
