@@ -18,6 +18,8 @@ const nodeToPost = ({ node }) => ({
   url: `https://www.instagram.com/p/${node.shortcode}/`
 });
 
+console.log( process.env.SESSION_ID );
+
 (async () => {
   const start = Date.now();
   const browser = await puppeteer.launch();
@@ -35,8 +37,6 @@ const nodeToPost = ({ node }) => ({
     value: process.env.SESSION_ID,
     id: 1
   });
-
-  console.log( process.env.SESSION_ID );
 
   console.log( 'Go to www.instagram.com' );
 
