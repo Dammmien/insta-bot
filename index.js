@@ -17,13 +17,11 @@ const nodeToPost = ({ node }) => ({
   shortcode: node.shortcode,
   url: `https://www.instagram.com/p/${node.shortcode}/`
 });
-
-console.log( process.env.SESSION_ID );
-
 (async () => {
   const start = Date.now();
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
+  const browser = await puppeteer.launch({ headless: false });
+  const pages = await browser.pages();
+  const page = pages[0];
 
   await page.setCookie({
     domain: 'www.instagram.com',
