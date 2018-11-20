@@ -7,6 +7,6 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "puppeteer": "^1.0.0"
+    "puppeteer": "1.0.0"
   }
 }
