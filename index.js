@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 
 const SLEEP_DURATION = 3000;
-const MAX_FOLLOWERS = 500;
+const MAX_FOLLOWERS = 300;
 let likesCounter = 0;
 
 const sleep = ms => new Promise(res => setTimeout(res, ms));
@@ -19,9 +19,11 @@ const nodeToPost = ({ node }) => ({
 });
 (async () => {
   const start = Date.now();
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: true });
   const pages = await browser.pages();
   const page = pages[0];
+
+  console.log( page );
 
   await page.setCookie({
     domain: 'www.instagram.com',
