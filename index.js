@@ -22,12 +22,17 @@ const nodeToPost = ({ node }) => ({
 
 (async function() {
   const start = Date.now();
-  console.log( start );
   const browser = await puppeteer.launch({ headless: true });
-  console.log( 'browser', browser );
   // const pages = await browser.pages();
   // console.log( 'pages', pages );
-  const page = await browser.newPage();
+  let page = null;
+
+  try {
+    page = await browser.newPage();
+  } catch (e) {
+    console.log( e );
+  }
+
   console.log( 'page', page );
 
   await page.setCookie({
