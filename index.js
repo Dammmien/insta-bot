@@ -24,8 +24,11 @@ const nodeToPost = ({ node }) => ({
   const start = Date.now();
   console.log( start );
   const browser = await puppeteer.launch({ headless: true });
+  console.log( 'browser', browser );
   const pages = await browser.pages();
+  console.log( 'pages', pages );
   const page = pages[0];
+  console.log( 'page', page );
 
   await page.setCookie({
     domain: 'www.instagram.com',
