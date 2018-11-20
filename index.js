@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer');
+const Test = require('./test');
 
 const SLEEP_DURATION = 3000;
 const MAX_FOLLOWERS = 300;
@@ -22,24 +23,26 @@ const nodeToPost = ({ node }) => ({
 
 (async function() {
   const start = Date.now();
-  const browser = await puppeteer.launch({
-    headless: false,
-    args: [
-      '--use-fake-ui-for-media-stream',
-      '--disable-notifications',
-      '--use-fake-device-for-media-stream'
-    ]
-  });
+  // const browser = await puppeteer.launch({
+  //   headless: false,
+  //   args: [
+  //     '--use-fake-ui-for-media-stream',
+  //     '--disable-notifications',
+  //     '--use-fake-device-for-media-stream'
+  //   ]
+  // });
+
+  const test = new Test();
 
   // const pages = await browser.pages();
   // console.log( 'pages', pages );
-  let page = null;
+  let page = await test.init();
 
-  try {
-    page = await browser.newPage();
-  } catch (e) {
-    console.log( e );
-  }
+  // try {
+  //   page = await browser.newPage();
+  // } catch (e) {
+  //   console.log( e );
+  // }
 
   console.log( 'page', page );
 
