@@ -1,4 +1,4 @@
-const Test = require('./test');
+const puppeteer = require('puppeteer');
 
 const SLEEP_DURATION = 3000;
 const MAX_FOLLOWERS = 300;
@@ -17,31 +17,11 @@ const nodeToPost = ({ node }) => ({
   shortcode: node.shortcode,
   url: `https://www.instagram.com/p/${node.shortcode}/`
 });
-
-(async function() {
+(async () => {
   const start = Date.now();
-  // const browser = await puppeteer.launch({
-  //   headless: false,
-  //   args: [
-  //     '--use-fake-ui-for-media-stream',
-  //     '--disable-notifications',
-  //     '--use-fake-device-for-media-stream'
-  //   ]
-  // });
-
-  const test = new Test();
-
-  // const pages = await browser.pages();
-  // console.log( 'pages', pages );
-  let page = await test.init();
-
-  // try {
-  //   page = await browser.newPage();
-  // } catch (e) {
-  //   console.log( e );
-  // }
-
-  console.log( 'page', page );
+  const browser = await puppeteer.launch({ headless: true });
+  const pages = await browser.pages();
+  const page = pages[0];
 
   await page.setCookie({
     domain: 'www.instagram.com',

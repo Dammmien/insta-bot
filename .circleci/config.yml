@@ -3,8 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:9.4-browsers
-    working_directory: ~/repo
+      - image: circleci/node:10.11.0-browsers
 
     steps:
       - checkout
@@ -26,7 +25,7 @@ workflows:
   daily:
     triggers:
       - schedule:
-          cron: 10 10 * * *
+          cron: 10 10,14,18,20 * * *
           filters:
             branches:
               only:
