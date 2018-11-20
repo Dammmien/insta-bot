@@ -20,14 +20,14 @@ const nodeToPost = ({ node }) => ({
   url: `https://www.instagram.com/p/${node.shortcode}/`
 });
 
-(async () => {
+(async function() {
   const start = Date.now();
   console.log( start );
   const browser = await puppeteer.launch({ headless: true });
   console.log( 'browser', browser );
-  const pages = await browser.pages();
-  console.log( 'pages', pages );
-  const page = pages[0];
+  // const pages = await browser.pages();
+  // console.log( 'pages', pages );
+  const page = await browser.newPage();
   console.log( 'page', page );
 
   await page.setCookie({
