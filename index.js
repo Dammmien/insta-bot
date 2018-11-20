@@ -1,11 +1,8 @@
-const puppeteer = require('puppeteer');
 const Test = require('./test');
 
 const SLEEP_DURATION = 3000;
 const MAX_FOLLOWERS = 300;
 let likesCounter = 0;
-
-console.log( puppeteer );
 
 const sleep = ms => new Promise(res => setTimeout(res, ms));
 const timeout = (ms, err) => new Promise((res, rej) => setTimeout(rej, ms, err));
