@@ -22,7 +22,15 @@ const nodeToPost = ({ node }) => ({
 
 (async function() {
   const start = Date.now();
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+    headless: false,
+    args: [
+      '--use-fake-ui-for-media-stream',
+      '--disable-notifications',
+      '--use-fake-device-for-media-stream'
+    ]
+  });
+
   // const pages = await browser.pages();
   // console.log( 'pages', pages );
   let page = null;
