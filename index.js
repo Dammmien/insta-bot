@@ -17,6 +17,7 @@ const nodeToPost = ({ node }) => ({
   shortcode: node.shortcode,
   url: `https://www.instagram.com/p/${node.shortcode}/`
 });
+
 (async () => {
   const start = Date.now();
   const browser = await puppeteer.launch({ headless: true });
