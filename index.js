@@ -1,11 +1,11 @@
 const puppeteer = require('puppeteer');
 
-const SLEEP_DURATION = 3000;
+const SLEEP_DURATION = 2500;
 const MAX_FOLLOWERS = 300;
 let likesCounter = 0;
 
 const sleep = ms => new Promise(res => setTimeout(res, ms));
-const timeout = (ms, err) => new Promise((res, rej) => setTimeout(rej, ms, err));
+
 const nodeToPost = ({ node }) => ({
   caption: ((node.edge_media_to_caption.edges[0] || {}).node ||  {}).text || '',
   id: node.id,
@@ -19,7 +19,6 @@ const nodeToPost = ({ node }) => ({
 });
 
 (async () => {
-  const start = Date.now();
   const browser = await puppeteer.launch({ headless: true });
   const pages = await browser.pages();
   const page = pages[0];
@@ -94,7 +93,8 @@ const nodeToPost = ({ node }) => ({
       const userPost = userPosts[i];
 
       if (userPost) {
-        await page.goto(userPost.url),
+        await page.goto(userPost.url);
+
         await sleep(SLEEP_DURATION);
 
         try {
@@ -111,6 +111,7 @@ const nodeToPost = ({ node }) => ({
     }
   }
 
-  console.log(`Like ${likesCounter} posts in ${Date.now() - start} ms`);
+  console.log(`Like ${likesCounter} posts of ${Object.keys(likedUsers).length} users.`);
+
   await browser.close();
 })();
