@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 
-const SLEEP_DURATION = 2500;
+const SLEEP_DURATION = 2000;
 const MAX_FOLLOWERS = 300;
 let likesCounter = 0;
 
