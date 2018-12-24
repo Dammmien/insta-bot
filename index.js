@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 
-const SLEEP_DURATION = 2500;
-const MAX_FOLLOWERS = 300;
+const SLEEP_DURATION = 1000;
+const MAX_FOLLOWERS = 500;
 let likesCounter = 0;
 
 const sleep = ms => new Promise(res => setTimeout(res, ms));
@@ -111,7 +111,7 @@ const nodeToPost = ({ node }) => ({
     }
   }
 
-  console.log(`Like ${likesCounter} posts of ${Object.keys(likedUsers).length} users.`);
+  console.log(`Like ${likesCounter} posts.`);
 
   await browser.close();
 })();
