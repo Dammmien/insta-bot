@@ -31,7 +31,7 @@ const shouldLikesPosts = (user) => {
     return false;
   }
 
-  if (followRatio < 0.5) {
+  if (followRatio < 0.33) {
     console.log(`Skip user ${user.username}: followed by ${followedBy}, follows ${follows}`);
     return false;
   }
