@@ -1,25 +1,10 @@
 const puppeteer = require('puppeteer');
-
+const { nodeToPost, sleep, shouldLikesPosts, getUserInformations, likePostsUser } = require('./helpers');
 const SLEEP_DURATION = 1500;
-const MAX_FOLLOWERS = 400;
-let likesCounter = 0;
 
-const sleep = ms => new Promise(res => setTimeout(res, ms));
-
-const nodeToPost = ({ node }) => ({
-  caption: ((node.edge_media_to_caption.edges[0] || {}).node ||  {}).text || '',
-  id: node.id,
-  is_video: node.is_video,
-  comments: (node.edge_media_to_comment || { count: 0 }).count,
-  likes: (node.edge_liked_by || { count: 0 }).count,
-  owner_id: node.owner.id,
-  comments_disabled: node.comments_disabled,
-  shortcode: node.shortcode,
-  url: `https://www.instagram.com/p/${node.shortcode}/`
-});
 
 (async () => {
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({ headless: false });
   const pages = await browser.pages();
   const page = pages[0];
 
@@ -53,7 +38,13 @@ const nodeToPost = ({ node }) => ({
   while (postsToLike.length) {
     const post = postsToLike.shift();
 
-    await page.goto(post.url);
+    try {
+      await page.goto(post.url);
+    } catch (e) {
+      console.log(`Failed to load ${post.url}`);
+      continue;
+    }
+
     await sleep(SLEEP_DURATION);
 
     let username = '';
@@ -65,53 +56,20 @@ const nodeToPost = ({ node }) => ({
       continue;
     }
 
-    if (likedUsers[username]) continue;
-    else likedUsers[username] = true;
-
-    await page.goto(`https://www.instagram.com/${username}`);
-
-    await sleep(SLEEP_DURATION);
-
-    let user = {};
-
-    try {
-      user = await page.evaluate(() => _sharedData.entry_data.ProfilePage[0].graphql.user);
-    } catch (e) {
-      console.log(`Failed to parse _sharedData of user: ${username}`);
+    if (likedUsers[username]) { // avoid multiple posts of the same users
+      console.log( `Skip ${username}: already liked` );
       continue;
+    } else {
+      likedUsers[username] = true;
     }
 
-    const followBy = user.edge_followed_by.count;
-    const userPosts = user.edge_owner_to_timeline_media.edges.map(nodeToPost);
+    const user = await getUserInformations(username, page);
 
-    if (followBy > MAX_FOLLOWERS) {
-      console.log(`Skip user ${username}: more than ${MAX_FOLLOWERS} followers.`);
-      continue;
-    }
-
-    for (var i = 0; i < 3; i++) {
-      const userPost = userPosts[i];
-
-      if (userPost) {
-        await page.goto(userPost.url);
-
-        await sleep(SLEEP_DURATION);
-
-        try {
-          await page.click('article > div > section > span > button');
-        } catch (err) {
-          console.log( `Failed to like ${userPost.url}` );
-          continue;
-        }
-
-        console.log( `Liked ${userPost.url}` );
-        likesCounter += 1;
-        await sleep(SLEEP_DURATION);
-      }
+    if (shouldLikesPosts(user)) {
+      console.log( `Let's go like ${username}:` );
+      await likePostsUser(user, page);
     }
   }
-
-  console.log(`Like ${likesCounter} posts.`);
 
   await browser.close();
 })();
