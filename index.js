@@ -4,7 +4,7 @@ const SLEEP_DURATION = 1500;
 
 
 (async () => {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: true });
   const pages = await browser.pages();
   const page = pages[0];
 

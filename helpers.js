@@ -1,4 +1,4 @@
-const MAX_FOLLOWED_BY = 800;
+const MAX_FOLLOWED_BY = 1000;
 const SLEEP_DURATION = 1500;
 
 const nodeToPost = ({ node }) => ({
@@ -31,7 +31,7 @@ const shouldLikesPosts = (user) => {
     return false;
   }
 
-  if (followRatio < 0.33) {
+  if (followRatio < 0.25) {
     console.log(`Skip user ${user.username}: followed by ${followedBy}, follows ${follows}`);
     return false;
   }
