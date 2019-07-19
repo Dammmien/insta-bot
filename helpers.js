@@ -80,6 +80,7 @@ const likePostsUser = async (user, page) => {
       }
 
       console.log( `Liked ${userPost.url}` );
+
       await sleep(SLEEP_DURATION);
     }
   }
