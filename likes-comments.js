@@ -3,7 +3,7 @@ const { nodeToPost, sleep, shouldLikesPosts, getUserInformations, likePostsUser,
 const SLEEP_DURATION = 1500;
 
 (async () => {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: true });
   const pages = await browser.pages();
   const page = pages[0];
 
@@ -24,9 +24,9 @@ const SLEEP_DURATION = 1500;
 
   await page.goto('https://www.instagram.com');
 
-  console.log( 'Go to www.instagram.com/explore/tags/drawing' );
+  console.log( 'Go to www.instagram.com/explore/tags/sketchbook' );
 
-  await page.goto('https://www.instagram.com/explore/tags/drawing');
+  await page.goto('https://www.instagram.com/explore/tags/sketchbook');
 
   const nodes = await page.evaluate(() => _sharedData.entry_data.TagPage[0].graphql.hashtag.edge_hashtag_to_top_posts.edges);
 
