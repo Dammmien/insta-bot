@@ -2,7 +2,6 @@ const puppeteer = require('puppeteer');
 const { nodeToPost, sleep, shouldLikesPosts, getUserInformations, likePostsUser } = require('./helpers');
 const SLEEP_DURATION = 1500;
 
-
 (async () => {
   const browser = await puppeteer.launch({ headless: true });
   const pages = await browser.pages();
