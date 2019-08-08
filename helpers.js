@@ -1,5 +1,5 @@
 const MAX_FOLLOWED_BY = 1000;
-const SLEEP_DURATION = 1500;
+const SLEEP_DURATION = 1750;
 
 const nodeToPost = ({ node }) => ({
   caption: ((node.edge_media_to_caption.edges[0] || {}).node ||  {}).text || '',
