@@ -22,18 +22,18 @@ workflows:
 
   version: 2
 
-  daily:
-    triggers:
-      - schedule:
-          cron: 5 9,12,15,18,21 * * *
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - build
+  # daily:
+  #   triggers:
+  #     - schedule:
+  #         cron: 5 9,12,15,18,21 * * *
+  #         filters:
+  #           branches:
+  #             only:
+  #               - master
+  #   jobs:
+  #     - build
 
-  on_push:
-    jobs:
-      - build
+  # on_push:
+  #   jobs:
+  #     - build
 
