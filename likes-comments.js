@@ -3,9 +3,11 @@ const { nodeToPost, sleep, shouldLikesPosts, getUserInformations, likePostsUser,
 const SLEEP_DURATION = 1500;
 
 (async () => {
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({ headless: false });
   const pages = await browser.pages();
   const page = pages[0];
+
+  page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36');
 
   await page.setCookie({
     domain: 'www.instagram.com',
