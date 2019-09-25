@@ -68,13 +68,13 @@ module.exports = async page => {
     const originalQuery = window.navigator.permissions.query;
 
     return window.navigator.permissions.query = (parameters) => {
-      return parameters.name === 'notifications' ? Promise.resolve({ state: Notification.permission }) : originalQuery(parameters)
+      return parameters.name === 'notifications' ? Promise.resolve({ state: Notification.permission }) : originalQuery(parameters);
     };
   });
 
 
   await page.evaluateOnNewDocument(() => {
-    Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
+    Object.defineProperty(navigator, 'plugins', { get: () => [ 1, 2, 3, 4, 5 ] });
   });
 
 
