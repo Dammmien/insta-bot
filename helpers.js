@@ -1,5 +1,4 @@
-const MAX_FOLLOWED_BY = 1000;
-const SLEEP_DURATION = 2000;
+const { MAX_FOLLOWED_BY, MAX_LIKES_PER_USER, MIN_FOLLOW_RATIO, MIN_SLEEP_DURATION } = require('./contants');
 
 const nodeToPost = ({ node }) => ({
   caption: ((node.edge_media_to_caption.edges[0] || {}).node ||  {}).text || '',
@@ -19,7 +18,7 @@ const nodeToComment = ({ node }) => ({
   username: node.owner.username
 });
 
-const sleep = ms => new Promise(res => setTimeout(res, ms));
+const sleep = () => new Promise(res => setTimeout(res, Math.round(MIN_SLEEP_DURATION + Math.random() * 500)));
 
 const shouldLikesPosts = (user) => {
   const followedBy = user.edge_followed_by.count;
@@ -31,7 +30,7 @@ const shouldLikesPosts = (user) => {
     return false;
   }
 
-  if (followRatio < 0.4) {
+  if (followRatio < MIN_FOLLOW_RATIO) {
     console.log(`Skip user ${user.username}: followed by ${followedBy}, follows ${follows}`);
     return false;
   }
@@ -39,58 +38,70 @@ const shouldLikesPosts = (user) => {
   return true;
 };
 
-const getUserInformations = async (username, page) => {
-  await page.goto(`https://www.instagram.com/${username}`);
-
-  await sleep(SLEEP_DURATION);
-
-  let user = {};
-
+const getUserInformation = async (username, page) => {
   try {
-    user = await page.evaluate(() => _sharedData.entry_data.ProfilePage[0].graphql.user);
+    await page.goto(`https://www.instagram.com/${username}`);
+    await sleep();
+    return await page.evaluate(() => _sharedData.entry_data.ProfilePage[0].graphql.user);
   } catch (e) {
-    console.log(`Failed to parse _sharedData of user: ${username}`);
+    console.log(`Failed to get user information of: ${username}`);
+    return {};
   }
-
-  return user;
 };
 
+const getPostUserName = async (post, page) => {
+  try {
+    await page.goto(post.url);
+    await sleep();
+    return await page.evaluate(() => _sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.username);
+  } catch (err) {
+    console.log(`Failed to load or parse _sharedData of ${post.url}`, { err });
+    return null;
+  }
+};
 
-const likePostsUser = async (user, page) => {
-  const userPosts = user.edge_owner_to_timeline_media.edges.map(nodeToPost);
+const likeUserPosts = async (user, page) => {
+  console.log( `Let's go like ${user.username}` );
+  let count = 0;
+  const userPosts = user.edge_owner_to_timeline_media.edges.map(nodeToPost).slice(0, MAX_LIKES_PER_USER);
 
-  for (var i = 0; i < 3; i++) {
-    const userPost = userPosts[i];
+  while(userPosts.length) {
+    const userPost = userPosts.shift();
 
-    if (userPost) {
-      try {
-        await page.goto(userPost.url);
-      } catch (err) {
-        console.log( `Failed to go to ${userPost.url}` );
-        continue;
-      }
-
-      await sleep(SLEEP_DURATION);
-
-      try {
-        await page.click('article > div > section > span > button');
-      } catch (err) {
-        console.log( `Failed to like ${userPost.url}` );
-        continue;
-      }
-
+    try {
+      await page.goto(userPost.url);
+      await sleep();
+      await page.click('article > div > section > span > button');
+      await sleep();
+      count += 1;
       console.log( `Liked ${userPost.url}` );
-
-      await sleep(SLEEP_DURATION);
+    } catch (err) {
+      console.log( `Failed to like ${userPost.url}` );
+      continue;
     }
   }
+
+  return count;
 };
+
+const getPostComments = async (post) => {
+  const url = 'https://www.instagram.com/graphql/query/?query_hash=f0986789a5c5d17c2400faebf16efd0d&variables=' + encodeURIComponent(JSON.stringify({ shortcode: post.shortcode , first: post.comments_count }));
+  const { data } = await page.evaluate(x => fetch(x).then(r => r.json()), url);
+
+  return data.shortcode_media.edge_media_to_comment.edges.map(
+    nodeToComment
+  ).filter( // Keep only one comment by user
+    (comment, index, arr) => arr.findIndex(item => item.owner_id === comment.owner_id) >= index
+  ).filter( // Remove post owner comments
+    (comment) => comment.owner_id !== post.owner_id
+  );
+}
 
 module.exports = {
 	nodeToPost,
-	sleep,
+	getPostUserName,
 	shouldLikesPosts,
-	nodeToComment,
-	getUserInformations,
-	likePostsUser
+	getPostComments,
+	getUserInformation,
+	likeUserPosts
 };

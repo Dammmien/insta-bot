@@ -1,78 +1,34 @@
-const puppeteer = require('puppeteer');
-const { nodeToPost, sleep, shouldLikesPosts, getUserInformations, likePostsUser } = require('./helpers');
-const { args } = require('./contants');
-const preventDetection = require('./prevent-detection');
-const SLEEP_DURATION = 2000;
+const { nodeToPost, getPostUserName, shouldLikesPosts, getUserInformation, likeUserPosts } = require('./helpers');
+const { MAX_LIKES_PER_SESSION } = require('./contants');
+const setup = require('./setup');
 
 (async () => {
-  const browser = await puppeteer.launch({ args, headless: false });
-  const pages = await browser.pages();
-  const page = pages[0];
+  const { browser, page } = await setup('https://www.instagram.com/explore/tags/drawing');
+  const nodes = await page.evaluate(() => _sharedData.entry_data.TagPage[0].graphql.hashtag.edge_hashtag_to_media.edges);
+  const posts = nodes.map(nodeToPost).filter((post, index, arr) => arr.findIndex(item => item.owner_id === post.owner_id) >= index);
 
-  preventDetection(page);
+  let usersLikedCount = 0;
+  let postsLikedCount = 0;
 
-  await page.setCookie({
-    domain: 'www.instagram.com',
-    expirationDate: 1597288045,
-    hostOnly: true,
-    httpOnly: true,
-    name: 'sessionid',
-    path: '/',
-    secure: true,
-    session: false,
-    value: process.env.SESSION_ID,
-    id: 1
-  });
+  while (posts.length) {
+    const post = posts.shift();
+    const userName = await getPostUserName(post, page);
 
-  console.log( 'Go to www.instagram.com' );
+    if (userName === null) continue;
 
-  await page.goto('https://www.instagram.com');
+    const user = await getUserInformation(userName, page);
 
-  console.log( 'Go to www.instagram.com/explore/tags/drawing' );
-
-  await page.goto('https://www.instagram.com/explore/tags/drawing');
-
-  const posts = await page.evaluate(() => _sharedData.entry_data.TagPage[0].graphql.hashtag.edge_hashtag_to_media.edges);
-
-  const postsToLike = posts.map(nodeToPost);
-
-  const likedUsers = {};
-
-  while (postsToLike.length) {
-    const post = postsToLike.shift();
-
-    try {
-      await page.goto(post.url);
-    } catch (e) {
-      console.log(`Failed to load ${post.url}`);
-      continue;
-    }
-
-    await sleep(SLEEP_DURATION);
-
-    let username = '';
-
-    try {
-      username = await page.evaluate(() => _sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.username);
-    } catch (e) {
-      console.log(`Failed to parse _sharedData of ${post.url}`);
-      continue;
-    }
-
-    if (likedUsers[username]) { // avoid multiple posts of the same users
-      console.log( `Skip ${username}: already liked` );
-      continue;
-    } else {
-      likedUsers[username] = true;
-    }
-
-    const user = await getUserInformations(username, page);
+    if (user === null) continue;
 
     if (shouldLikesPosts(user)) {
-      console.log( `Let's go like ${username}:` );
-      await likePostsUser(user, page);
+      usersLikedCount += 1;
+      postsLikedCount += await likeUserPosts(user, page);
+
+      if (postsLikedCount >= MAX_LIKES_PER_SESSION) break;
     }
   }
+
+  console.log( `Liked ${postsLikedCount} posts from ${usersLikedCount} users` );
 
   await browser.close();
 })();
