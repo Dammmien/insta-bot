@@ -28,7 +28,7 @@ const setup = require('./setup');
     }
   }
 
-  console.log( `Liked ${postsLikedCount} from ${usersLikedCount} users` );
+  console.log( `Liked ${postsLikedCount} posts from ${usersLikedCount} users` );
 
   await browser.close();
 })();

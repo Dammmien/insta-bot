@@ -1,4 +1,4 @@
-const { MAX_FOLLOWED_BY, MIN_FOLLOW_RATIO, MIN_SLEEP_DURATION } = require('./contants');
+const { MAX_FOLLOWED_BY, MAX_LIKES_PER_USER, MIN_FOLLOW_RATIO, MIN_SLEEP_DURATION } = require('./contants');
 
 const nodeToPost = ({ node }) => ({
   caption: ((node.edge_media_to_caption.edges[0] || {}).node ||  {}).text || '',
@@ -18,10 +18,7 @@ const nodeToComment = ({ node }) => ({
   username: node.owner.username
 });
 
-const sleep = () => {
-  console.log( 'SLEEP' );
-  return new Promise(res => setTimeout(res, Math.round(MIN_SLEEP_DURATION + Math.random() * 500)))
-};
+const sleep = () => new Promise(res => setTimeout(res, Math.round(MIN_SLEEP_DURATION + Math.random() * 500)));
 
 const shouldLikesPosts = (user) => {
   const followedBy = user.edge_followed_by.count;
@@ -66,7 +63,7 @@ const getPostUserName = async (post, page) => {
 const likeUserPosts = async (user, page) => {
   console.log( `Let's go like ${user.username}` );
   let count = 0;
-  const userPosts = user.edge_owner_to_timeline_media.edges.map(nodeToPost).slice(0, 3);
+  const userPosts = user.edge_owner_to_timeline_media.edges.map(nodeToPost).slice(0, MAX_LIKES_PER_USER);
 
   while(userPosts.length) {
     const userPost = userPosts.shift();
@@ -90,11 +87,12 @@ const likeUserPosts = async (user, page) => {
 const getPostComments = async (post) => {
   const url = 'https://www.instagram.com/graphql/query/?query_hash=f0986789a5c5d17c2400faebf16efd0d&variables=' + encodeURIComponent(JSON.stringify({ shortcode: post.shortcode , first: post.comments_count }));
   const { data } = await page.evaluate(x => fetch(x).then(r => r.json()), url);
+
   return data.shortcode_media.edge_media_to_comment.edges.map(
     nodeToComment
-  ).filter(
+  ).filter( // Keep only one comment by user
     (comment, index, arr) => arr.findIndex(item => item.owner_id === comment.owner_id) >= index
-  ).filter(
+  ).filter( // Remove post owner comments
     (comment) => comment.owner_id !== post.owner_id
   );
 }
