@@ -64,10 +64,11 @@ const getPostUserName = async (post, page) => {
 };
 
 const likeUserPosts = async (user, page) => {
-  console.log( `Let's go like ${user.username}:` );
+  console.log( `Let's go like ${user.username}` );
+  let count = 0;
   const userPosts = user.edge_owner_to_timeline_media.edges.map(nodeToPost).slice(0, 3);
 
-  while(userPost.length) {
+  while(userPosts.length) {
     const userPost = userPosts.shift();
 
     try {
@@ -75,12 +76,15 @@ const likeUserPosts = async (user, page) => {
       await sleep();
       await page.click('article > div > section > span > button');
       await sleep();
+      count += 1;
       console.log( `Liked ${userPost.url}` );
     } catch (err) {
       console.log( `Failed to like ${userPost.url}` );
       continue;
     }
   }
+
+  return count;
 };
 
 const getPostComments = async (post) => {

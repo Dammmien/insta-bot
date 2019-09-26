@@ -33,3 +33,7 @@ workflows:
     jobs:
       - build
 
+  on_push:
+    jobs:
+      - build
+
