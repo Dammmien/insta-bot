@@ -10,7 +10,7 @@ module.exports = async url => {
   await page.setCookie(cookie);
 
   page.on('response', async response => {
-    if (response.status() === 400) {
+    if (response.status() === 400 && response.url().includes('like')) {
       console.error( `Received a status 400`, { url: response.url() });
       await browser.close();
       process.exit(1);
