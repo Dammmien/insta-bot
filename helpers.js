@@ -18,7 +18,7 @@ const nodeToComment = ({ node }) => ({
   username: node.owner.username
 });
 
-const sleep = () => new Promise(res => setTimeout(res, Math.round(MIN_SLEEP_DURATION + Math.random() * 500)));
+const sleep = () => new Promise(res => setTimeout(res, Math.round(MIN_SLEEP_DURATION + Math.random() * MIN_SLEEP_DURATION)));
 
 const shouldLikesPosts = (user) => {
   const followedBy = user.edge_followed_by.count;

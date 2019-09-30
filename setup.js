@@ -3,7 +3,7 @@ const { args, cookie } = require('./contants');
 const preventDetection = require('./prevent-detection');
 
 module.exports = async url => {
-  const browser = await puppeteer.launch({ args, headless: false });
+  const browser = await puppeteer.launch({ args, headless: true });
   const pages = await browser.pages();
   const page = pages[0];
   await preventDetection(page);
