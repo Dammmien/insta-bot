@@ -45,7 +45,7 @@ const getUserInformation = async (username, page) => {
     return await page.evaluate(() => _sharedData.entry_data.ProfilePage[0].graphql.user);
   } catch (e) {
     console.log(`Failed to get user information of: ${username}`);
-    return {};
+    return null;
   }
 };
 
@@ -84,7 +84,7 @@ const likeUserPosts = async (user, page) => {
   return count;
 };
 
-const getPostComments = async (post) => {
+const getPostComments = async (post, page) => {
   const url = 'https://www.instagram.com/graphql/query/?query_hash=f0986789a5c5d17c2400faebf16efd0d&variables=' + encodeURIComponent(JSON.stringify({ shortcode: post.shortcode , first: post.comments_count }));
   const { data } = await page.evaluate(x => fetch(x).then(r => r.json()), url);
 
