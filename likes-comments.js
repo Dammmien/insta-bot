@@ -3,7 +3,7 @@ const { MAX_LIKES_PER_SESSION } = require('./contants');
 const setup = require('./setup');
 
 (async () => {
-  const { browser, page } = await setup('https://www.instagram.com/explore/tags/sketchbook');
+  const { browser, page } = await setup('https://www.instagram.com/explore/tags/watercolor');
   const nodes = await page.evaluate(() => _sharedData.entry_data.TagPage[0].graphql.hashtag.edge_hashtag_to_top_posts.edges);
   const posts = nodes.map(nodeToPost);
 

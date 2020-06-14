@@ -1,11 +1,14 @@
-const { nodeToPost, getPostUserName, shouldLikesPosts, getUserInformation, likeUserPosts } = require('./helpers');
+const { formatDuration, nodeToPost, getPostUserName, shouldLikesPosts, getUserInformation, likeUserPosts } = require('./helpers');
 const { MAX_LIKES_PER_SESSION } = require('./contants');
 const setup = require('./setup');
 
 (async () => {
+  const start = Date.now();
   const { browser, page } = await setup('https://www.instagram.com/explore/tags/drawing');
   const nodes = await page.evaluate(() => _sharedData.entry_data.TagPage[0].graphql.hashtag.edge_hashtag_to_media.edges);
   const posts = nodes.map(nodeToPost).filter((post, index, arr) => arr.findIndex(item => item.owner_id === post.owner_id) >= index);
+
+  console.log( posts );
 
   let usersLikedCount = 0;
   let postsLikedCount = 0;
@@ -28,7 +31,7 @@ const setup = require('./setup');
     }
   }
 
-  console.log( `Liked ${postsLikedCount} posts from ${usersLikedCount} users` );
+  console.log( `Liked ${postsLikedCount} posts from ${usersLikedCount} users in ${formatDuration(Date.now() - start)}` );
 
   await browser.close();
 })();

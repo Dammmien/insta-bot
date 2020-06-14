@@ -5,7 +5,7 @@ module.exports = {
 		'--ignore-certifcate-errors',
 		'--ignore-certifcate-errors-spki-list',
 		'--no-sandbox',
-		'--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36"',
+		'--user-agent="Mozilla/5.0 (iPhone; CPU iPhone OS 12_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 123.0.0.24.115 (iPhone10,2; iOS 12_4_1; en_US; en-US; scale=2.61; 1080x1920; 188362626)"',
 		'--window-position=0,0'
 	],
 
@@ -22,11 +22,11 @@ module.exports = {
     id: 1
   },
 
-  MIN_SLEEP_DURATION: 3000,
+  MIN_SLEEP_DURATION: 4000,
 
   MAX_FOLLOWED_BY: 1000,
 
-  MIN_FOLLOW_RATIO: 0.5,
+  MIN_FOLLOW_RATIO: 0.3,
 
   MAX_LIKES_PER_SESSION: 50,
 

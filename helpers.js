@@ -40,9 +40,13 @@ const shouldLikesPosts = (user) => {
 
 const getUserInformation = async (username, page) => {
   try {
-    await page.goto(`https://www.instagram.com/${username}`);
-    await sleep();
-    return await page.evaluate(() => _sharedData.entry_data.ProfilePage[0].graphql.user);
+    const url = 'https://www.instagram.com/sketchbook_lee/?__a=1';
+    const data = await page.evaluate(x => fetch(x).then(r => r.json()), url);
+    console.log( data );
+    return data.graphql.user;
+    // await page.goto(`https://www.instagram.com/${username}`);
+    // await sleep();
+    // return await page.evaluate(() => _sharedData.entry_data.ProfilePage[0].graphql.user);
   } catch (e) {
     console.log(`Failed to get user information of: ${username}`);
     return null;
@@ -51,9 +55,12 @@ const getUserInformation = async (username, page) => {
 
 const getPostUserName = async (post, page) => {
   try {
-    await page.goto(post.url);
-    await sleep();
-    return await page.evaluate(() => _sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.username);
+    const url = 'https://www.instagram.com/graphql/query/?query_hash=6ff3f5c474a240353993056428fb851e&variables=' + encodeURIComponent(JSON.stringify({ shortcode: post.shortcode, include_reel: true, include_logged_out: false }));
+    const { data } = await page.evaluate(x => fetch(x).then(r => r.json()), url);
+    return data.shortcode_media.owner.reel.owner.username;
+    // await page.goto(post.url);
+    // await sleep();
+    // return await page.evaluate(() => _sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.username);
   } catch (err) {
     console.log(`Failed to load or parse _sharedData of ${post.url}`, { err });
     return null;
@@ -95,9 +102,19 @@ const getPostComments = async (post, page) => {
   ).filter( // Remove post owner comments
     (comment) => comment.owner_id !== post.owner_id
   );
-}
+};
+
+const formatDuration = duration => {
+    const secondes = Math.floor(duration / 1000);
+    const h = Math.floor(secondes / 3600);
+    const m = Math.floor((secondes - (h * 3600)) / 60);
+    const s = secondes - (h * 3600) - (m * 60);
+
+  return `${h < 10 ? '0' + h  : h}:${m < 10 ? '0' + m  : m}:${s < 10 ? '0' + s  : s}`;
+};
 
 module.exports = {
+  formatDuration,
 	nodeToPost,
 	getPostUserName,
 	shouldLikesPosts,
